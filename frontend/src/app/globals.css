@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@theme {
+  --font-poppins: "Poppins", sans-serif;
+  --font-roboto: "Roboto", sans-serif;
+
+  --radius: 8px;
+
+  --color-custom-blue: #315cea;
+
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f9fafc;
+  --color-background-hover: #f5f5f5;
+  --color-background-overlay: #bfc0c2;
+
+  --color-text-primary: #000000;
+  --color-text-secondary: #7d8184;
+  --color-text-tertiary: #dd4343;
+  --color-text-quaternary: #335be8;
+  --color-text-dark-grey: #7d8184;
+
+  --color-success-primary: #21AF52;
+  --color-success-secondary: #E9FAEF;
+
+  --color-warning-primary: #C77414;
+  --color-warning-secondary: #FEF3E6;
+  --color-warning-border: #fccf9c;
+
+  --color-danger-primary: #DB4444;
+  --color-danger-secondary: #FCE9EC;
+  --color-danger-border: #f9d2d9;
+
+  --color-button-primary: #db4444;
+
+  --color-border-primary: #d1d5db;
+  --color-border-secondary: #7d8184;
+
+  --color-info-primary: #2A4EC7;
+  --color-info-secondary: #EAEFFD;
+
+  --color-custom-blue: #315cea;
+}
