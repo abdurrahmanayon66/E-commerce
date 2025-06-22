@@ -17,6 +17,25 @@ export interface Order {
   productTitle?: string;
 }
 
+export interface Payment{
+   _id: string;
+  customerId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  shippingInfoId: string;
+  paymentStatus: 'pending' | 'paid' | 'failed';
+  orderStatus: 'pending' | 'shipped' | 'delivered' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+  paymentMethod: string;
+  customerName?: string;
+  status: string;
+  orderId: string;
+  productTitle?: string;
+  transactionId: string
+}
+
 
 export interface Address {
   _id: string;

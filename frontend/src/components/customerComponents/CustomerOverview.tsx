@@ -3,15 +3,17 @@ import React from "react";
 import { Package, Heart, Truck, Gift, LucideIcon } from "lucide-react";
 import CustomerOverviewCard from "../CustomerOverviewCard";
 import ActivityCard from "../ActivityCard";
-import { useCustomerStats, useGetCustomerProfile } from "@/hooks/customerHooks";
+import {
+  useCustomerStats,
+  useGetCustomerActivities,
+  useGetCustomerProfile,
+} from "@/hooks/customerHooks";
+import dayjs from "dayjs";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
 
-type Activity = {
-  id: string;
-  type: "order_delivered" | "wishlist_added" | "order_shipped" | "review_posted" | "coupon_applied";
-  title: string;
-  description: string;
-  timestamp: string;
-};
+dayjs.extend(isToday);
+dayjs.extend(isYesterday);
 
 type CardData = {
   title: string;
@@ -21,85 +23,73 @@ type CardData = {
   iconColor: string;
 };
 
+const formatCustomDate = (timestamp: number) => {
+  const date = dayjs(timestamp);
+  if (date.isToday()) {
+    return `Today, ${date.format("h:mm A")}`;
+  } else if (date.isYesterday()) {
+    return `Yesterday, ${date.format("h:mm A")}`;
+  } else {
+    return date.format("MMM D, h:mm A");
+  }
+};
+
 const CustomerOverview = () => {
-  const { data: stats, isLoading } = useCustomerStats();
-   const { data: customerData, isLoading: customerLoading, error: customerError } = useGetCustomerProfile();
+  const statsQuery = useCustomerStats();
+  const profileQuery = useGetCustomerProfile();
+  const activityQuery = useGetCustomerActivities();
+
+  const { data: stats, isLoading: statsLoading } = statsQuery;
+  const { data: customerData } = profileQuery;
+  const { data: activities, isLoading: activityLoading, isError: activityError } = activityQuery;
 
   const cardData: CardData[] = [
     {
       title: "Total Orders",
-      value: isLoading ? "..." : String(stats?.totalOrders ?? 0),
+      value: statsLoading ? "..." : String(stats?.totalOrders ?? 0),
       icon: Package,
       iconBgColor: "bg-blue-50",
       iconColor: "text-blue-600",
     },
     {
       title: "Wishlist Items",
-      value: isLoading ? "..." : String(stats?.totalWishlistItems ?? 0),
+      value: statsLoading ? "..." : String(stats?.totalWishlistItems ?? 0),
       icon: Heart,
       iconBgColor: "bg-pink-50",
       iconColor: "text-pink-600",
     },
     {
       title: "Pending Deliveries",
-      value: isLoading ? "..." : String(stats?.pendingOrders ?? 0),
+      value: statsLoading ? "..." : String(stats?.pendingOrders ?? 0),
       icon: Truck,
       iconBgColor: "bg-orange-50",
       iconColor: "text-orange-600",
     },
     {
       title: "Active Coupons",
-      value: "5", 
+      value: "5",
       icon: Gift,
       iconBgColor: "bg-green-50",
       iconColor: "text-green-600",
     },
   ];
 
-  const sampleActivities: Activity[] = [
-    {
-      id: "1",
-      type: "order_delivered",
-      title: "Order Delivered",
-      description: "Your order #ORD-7895 has been delivered",
-      timestamp: "Today, 9:45 AM",
-    },
-    {
-      id: "2",
-      type: "wishlist_added",
-      title: "Added to Wishlist",
-      description: "You added 'Wireless Headphones' to your wishlist",
-      timestamp: "Yesterday, 4:30 PM",
-    },
-    {
-      id: "3",
-      type: "order_shipped",
-      title: "Order Shipped",
-      description: "Your order #ORD-7891 has been shipped",
-      timestamp: "Yesterday, 11:20 AM",
-    },
-    {
-      id: "4",
-      type: "review_posted",
-      title: "Review Posted",
-      description: "You posted a review for 'Smart Watch'",
-      timestamp: "May 20, 2023",
-    },
-    {
-      id: "5",
-      type: "coupon_applied",
-      title: "Coupon Applied",
-      description: "You used coupon 'SUMMER20' on your purchase",
-      timestamp: "May 18, 2023",
-    },
-  ];
+  const latestUpdate = Math.max(
+    statsQuery.dataUpdatedAt,
+    profileQuery.dataUpdatedAt,
+    activityQuery.dataUpdatedAt
+  );
+
+  const formattedUpdateTime = formatCustomDate(latestUpdate);
 
   return (
     <div>
       <div>
-        <h1 className="text-5xl font-semibold mb-5">Hi, {customerData?.firstName}{" "}👋</h1>
+        <h1 className="text-5xl font-semibold mb-5">
+          Hi, {customerData?.firstName} 👋
+        </h1>
         <h3 className="text-base text-right text-text-secondary mb-5">
-          Last updated: Today, 10:30 AM
+          Last updated: {formattedUpdateTime}
         </h3>
       </div>
 
@@ -116,9 +106,15 @@ const CustomerOverview = () => {
         ))}
       </div>
 
-      <div className="lg:mt-10 md:mt-5 mt-2.5">
-        <ActivityCard activities={sampleActivities} />
-      </div>
+      {activityLoading ? (
+        <p className="text-text-secondary text-sm">Loading recent activity...</p>
+      ) : activityError ? (
+        <p className="text-red-500 text-sm">Failed to load recent activities.</p>
+      ) : (
+        <div className="lg:mt-10 md:mt-5 mt-2.5">
+          <ActivityCard activities={activities?.activities ?? []} />
+        </div>
+      )}
     </div>
   );
 };

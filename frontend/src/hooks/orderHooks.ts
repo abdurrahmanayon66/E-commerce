@@ -6,8 +6,12 @@ import {
   CreateOrderRequest,
   OrderDetailsResponse,
   OrderStatusCounts,
+  Payment,
 } from "@/types/ordertypes";
-import { CUSTOMER_STATS_QUERY_KEY } from "./customerHooks";
+import {
+  CUSTOMER_ACTIVITIES_QUERY_KEY,
+  CUSTOMER_STATS_QUERY_KEY,
+} from "./customerHooks";
 
 export const ORDERS_QUERY_KEY = ["orders"];
 export const SELLER_ORDERS_QUERY_KEY = ["seller-orders"];
@@ -16,12 +20,24 @@ export const ORDER_DETAILS_QUERY_KEY = (orderId: string) => [
   orderId,
 ];
 export const ORDER_STATUS_COUNTS_QUERY_KEY = ["order-status-counts"];
+export const PAYMENTS_QUERY_KEY = ["payments"];
 
 export const useGetAllOrders = () => {
   return useQuery<{ orders: Order[] }>({
     queryKey: ORDERS_QUERY_KEY,
     queryFn: async () => {
       const res = await apiClient.get("/api/orders/get-all");
+      return res.data;
+    },
+    staleTime: 0,
+  });
+};
+
+export const useGetPaymentTransactions = () => {
+  return useQuery<{ success: boolean; payments: Payment[] }>({
+    queryKey: PAYMENTS_QUERY_KEY,
+    queryFn: async () => {
+      const res = await apiClient.get("/api/orders/get-payments");
       return res.data;
     },
     staleTime: 0,
@@ -64,6 +80,10 @@ export const useAddOrder = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CUSTOMER_STATS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: PAYMENTS_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: CUSTOMER_ACTIVITIES_QUERY_KEY,
+      });
       queryClient.refetchQueries({
         queryKey: ORDERS_QUERY_KEY,
         exact: true,
@@ -94,6 +114,9 @@ export const useUpdateOrderStatus = () => {
       queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: SELLER_ORDERS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CUSTOMER_STATS_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: CUSTOMER_ACTIVITIES_QUERY_KEY,
+      });
       queryClient.invalidateQueries({
         queryKey: ORDER_DETAILS_QUERY_KEY(variables.orderId),
       });

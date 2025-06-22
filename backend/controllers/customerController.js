@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const sharp = require("sharp");
 const Order = require("../models/Order");
 const Wishlist = require("../models/Wishlist");
+const RecentActivity = require("../models/RecentActivity");
 
 const buildCustomerPayload = async ({ firstName, lastName, email, password, phone, bio }, file) => {
   const customerImage = file
@@ -249,5 +250,23 @@ exports.getCustomerStats = async (req, res) => {
   } catch (error) {
     console.error('Error fetching customer stats:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getActivitiesByCustomer = async (req, res) => {
+  try {
+    const { customer } = req;
+    const customerId = customer?._id;
+
+    if (!customerId) {
+      return res.status(400).json({ message: "Customer ID is required" });
+    }
+
+    const activities = await RecentActivity.find({ customerId }).sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, activities });
+  } catch (error) {
+    console.error("Error fetching recent activities:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };

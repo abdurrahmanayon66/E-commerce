@@ -1,10 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import apiClient from '@/lib/apiClient';
 import { RegisterPayload, LoginResponse, Customer, UpdatePayload, CustomerStats } from '@/types/customerTypes';
+import { ActivitiesResponse } from '@/types/activityTypes';
 
 export const CUSTOMER_QUERY_KEY = ['customers'];
 export const CUSTOMER_PROFILE_QUERY_KEY = ['customer-profile'];
 export const CUSTOMER_STATS_QUERY_KEY = ['customer-stats'];
+export const CUSTOMER_ACTIVITIES_QUERY_KEY = ['customer-activities'];
 
 export const useCustomerStats = () => {
   return useQuery<CustomerStats>({
@@ -34,6 +36,17 @@ export const useRegisterCustomer = () => {
       });
       return response.data;
     },
+  });
+};
+
+export const useGetCustomerActivities = () => {
+  return useQuery<ActivitiesResponse>({
+    queryKey: CUSTOMER_ACTIVITIES_QUERY_KEY,
+    queryFn: async () => {
+      const res = await apiClient.get("/api/customers/get-recent-activity");
+      return res.data;
+    },
+    staleTime: 5*60*1000, 
   });
 };
 
