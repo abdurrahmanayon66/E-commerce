@@ -3,7 +3,23 @@ import React from "react";
 import { Download } from "lucide-react";
 import { useGetPaymentTransactions } from "@/hooks/orderHooks";
 import { useGetSellerPaymentTransactions } from "@/hooks/sellerHooks";
+import { downloadReceipt } from "@/lib/receiptGenerator";
 
+export interface Payment {
+  _id: string;
+  customerId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  shippingInfoId: string;
+  paymentStatus: "paid" | "pending" | "failed";
+  orderStatus: string;
+  paymentMethod: string;
+  createdAt: string;
+  updatedAt: string;
+  productTitle?: string;
+  transactionId?: string;
+}
 interface PaymentTransactionsProps {
   userType: "customer" | "seller";
 }
@@ -18,6 +34,10 @@ export default function PaymentTransactions({
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Something went wrong</div>;
+
+  const handleDownloadReceipt = (payment: Payment) => {
+    downloadReceipt(payment, userType);
+  };
 
   return (
     <div className="w-full p-6.5 bg-white rounded-lg border border-border-primary">
@@ -80,7 +100,10 @@ export default function PaymentTransactions({
 
                   <div className="h-full flex items-end">
                     {payment?.paymentStatus === "paid" ? (
-                      <button className="flex items-center md:min-h-13 gap-x-2.5 justify-center text-base font-medium text-text-primary border border-border-primary px-3 py-1.5 rounded-sm cursor-pointer">
+                      <button
+                        onClick={() => handleDownloadReceipt(payment)}
+                        className="flex items-center md:min-h-13 gap-x-2.5 justify-center text-base font-medium text-text-primary border border-border-primary px-3 py-1.5 rounded-sm cursor-pointer"
+                      >
                         <Download className="w-6 h-6" />
                         <span className="hidden md:block">
                           Download Receipt

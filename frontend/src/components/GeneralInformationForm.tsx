@@ -33,8 +33,6 @@ const GeneralInformationForm = ({
     formState: { errors },
   } = useFormContext();
 
-  console.log("Initial Data:", initialData);
-
   const isInitialized = useRef(false);
   const [selectedCategory, setSelectedCategory] = useState(
     initialData?.category || ""

@@ -125,24 +125,7 @@ const AddProductForm = () => {
   };
 
   const saveDraft = async () => {
-    try {
-      setIsSubmitting(true);
-      const data = methods.getValues();
-      localStorage.setItem(
-        "productDraft",
-        JSON.stringify({
-          ...data,
-          negotiable,
-          savedAt: new Date().toISOString(),
-        })
-      );
-      alert("Draft saved successfully!");
-    } catch (error) {
-      console.error("Error saving draft:", error);
-      alert("Failed to save draft.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    toast.error("Sorry, this feature is not available yet.");
   };
 
   const discardProduct = () => {
@@ -153,7 +136,6 @@ const AddProductForm = () => {
     ) {
       localStorage.removeItem("productDraft");
       reset();
-      router.push("/seller/products");
     }
   };
 
