@@ -23,6 +23,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { useCartStore } from "@/store/cartStore";
 
 interface MobileSidebarProps {
   isOpen: boolean;
@@ -35,11 +36,13 @@ const MobileSidebar = ({ isOpen, setIsOpen, trigger }: MobileSidebarProps) => {
   const { userType } = useUserStore();
   const router = useRouter();
   const { resetUser } = useUserStore.getState();
+   const { resetEverything } = useCartStore();
 
   const handleLogout = async () => {
     if (typeof window !== "undefined") {
       sessionStorage.clear();
       resetUser();
+      resetEverything();
       await fetch("/api/session/logout", {
         method: "POST",
         credentials: "include",

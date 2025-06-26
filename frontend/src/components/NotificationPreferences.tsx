@@ -1,4 +1,12 @@
-import React, { useState } from "react";
+"use client";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  getNotificationPreferences,
+  saveNotificationPreferences,
+  NotificationPreferences as NotificationPrefsType,
+} from "../store/notificationStore";
+import { Loader2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 const Toggle = ({
   enabled,
@@ -9,7 +17,7 @@ const Toggle = ({
 }) => (
   <button
     onClick={onChange}
-    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+    className={`relative inline-flex h-6 w-11 cursor-pointer items-center rounded-full transition-colors ${
       enabled ? "bg-button-primary" : "bg-border-primary"
     }`}
   >
@@ -22,16 +30,38 @@ const Toggle = ({
 );
 
 const NotificationPreferences = () => {
-  const [preferences, setPreferences] = useState({
+  const [preferences, setPreferences] = useState<NotificationPrefsType>({
     orderUpdates: true,
     promotions: true,
-    newsletter: false,
+    newsletter: true,
     wishlistUpdates: true,
   });
+  const [isSaving, setIsSaving] = useState(false);
+  const initialPrefsRef = useRef<NotificationPrefsType | null>(null);
 
-  const togglePreference = (key: keyof typeof preferences) => {
+  useEffect(() => {
+    const prefs = getNotificationPreferences();
+    setPreferences(prefs);
+    initialPrefsRef.current = prefs;
+  }, []);
+
+  const togglePreference = (key: keyof NotificationPrefsType) => {
     setPreferences((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const handleSave = () => {
+    setIsSaving(true);
+    saveNotificationPreferences(preferences);
+
+    setTimeout(() => {
+      setIsSaving(false);
+      initialPrefsRef.current = preferences;
+      toast.success("Notification preferences saved!");
+    }, 2000);
+  };
+
+  const hasChanges =
+    JSON.stringify(preferences) !== JSON.stringify(initialPrefsRef.current);
 
   return (
     <div className="bg-white rounded-lg border border-border-primary p-6.5 w-full">
@@ -43,50 +73,43 @@ const NotificationPreferences = () => {
       </p>
 
       <div className="mb-10">
-        <div className="flex items-center justify-between h-18 border-b border-border-primary">
-          <span className="text-base font-medium text-text-primary">
-            Order Updates
-          </span>
-          <Toggle
-            enabled={preferences.orderUpdates}
-            onChange={() => togglePreference("orderUpdates")}
-          />
-        </div>
-
-        <div className="flex items-center justify-between h-18 border-b border-border-primary">
-          <span className="text-base font-medium text-text-primary">
-            Promotions and deals
-          </span>
-          <Toggle
-            enabled={preferences.promotions}
-            onChange={() => togglePreference("promotions")}
-          />
-        </div>
-
-        <div className="flex items-center justify-between h-18 border-b border-border-primary">
-          <span className="text-base font-medium text-text-primary">
-            Newsletter
-          </span>
-          <Toggle
-            enabled={preferences.newsletter}
-            onChange={() => togglePreference("newsletter")}
-          />
-        </div>
-
-        <div className="flex items-center justify-between h-18 border-b border-border-primary">
-          <span className="text-base font-medium text-text-primary">
-            Wishlist updates
-          </span>
-          <Toggle
-            enabled={preferences.wishlistUpdates}
-            onChange={() => togglePreference("wishlistUpdates")}
-          />
-        </div>
+        {(
+          [
+            ["Order Updates", "orderUpdates"],
+            ["Promotions and deals", "promotions"],
+            ["Newsletter", "newsletter"],
+            ["Wishlist updates", "wishlistUpdates"],
+          ] as [string, keyof NotificationPrefsType][]
+        ).map(([label, key]) => (
+          <div
+            key={key}
+            className="flex items-center justify-between h-18 border-b border-border-primary"
+          >
+            <span className="text-base font-medium text-text-primary">
+              {label}
+            </span>
+            <Toggle
+              enabled={preferences[key]}
+              onChange={() => togglePreference(key)}
+            />
+          </div>
+        ))}
       </div>
 
       <div className="flex justify-end">
-        <button className="flex items-center min-h-13 text-base justify-center rounded-sm border font-medium text-white bg-button-primary gap-x-1.5 px-5 py-2.5 cursor-pointer">
-          Save Preferences
+        <button
+          onClick={handleSave}
+          disabled={isSaving || !hasChanges}
+          className="flex items-center min-h-13 text-base justify-center rounded-sm border font-medium text-white bg-button-primary gap-x-1.5 px-5 py-2.5 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+        >
+          {isSaving ? (
+            <>
+              <Loader2 className="animate-spin h-4 w-4" />
+              Saving...
+            </>
+          ) : (
+            "Save Preferences"
+          )}
         </button>
       </div>
     </div>

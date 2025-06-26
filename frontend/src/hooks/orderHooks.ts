@@ -10,6 +10,7 @@ import {
 } from "@/types/ordertypes";
 import {
   CUSTOMER_ACTIVITIES_QUERY_KEY,
+  CUSTOMER_NOTIFICATIONS_QUERY_KEY,
   CUSTOMER_STATS_QUERY_KEY,
 } from "./customerHooks";
 
@@ -80,6 +81,9 @@ export const useAddOrder = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CUSTOMER_STATS_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: CUSTOMER_NOTIFICATIONS_QUERY_KEY,
+      });
       queryClient.invalidateQueries({ queryKey: PAYMENTS_QUERY_KEY });
       queryClient.invalidateQueries({
         queryKey: CUSTOMER_ACTIVITIES_QUERY_KEY,
@@ -113,6 +117,9 @@ export const useUpdateOrderStatus = () => {
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ORDERS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: SELLER_ORDERS_QUERY_KEY });
+      queryClient.invalidateQueries({
+        queryKey: CUSTOMER_NOTIFICATIONS_QUERY_KEY,
+      });
       queryClient.invalidateQueries({ queryKey: CUSTOMER_STATS_QUERY_KEY });
       queryClient.invalidateQueries({
         queryKey: CUSTOMER_ACTIVITIES_QUERY_KEY,

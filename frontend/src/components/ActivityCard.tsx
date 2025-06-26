@@ -10,6 +10,8 @@ import {
   HeartOff,
 } from 'lucide-react';
 import { Activity } from '@/types/activityTypes'; 
+import { formatActivityDate } from '@/lib/dateHelper';
+import { toTitleCase } from '@/lib/titleFormatHelper';
 
 interface ActivityCardProps {
   activities: Activity[];
@@ -42,53 +44,6 @@ const getActivityIcon = (type: Activity['activityStatus']) => {
 };
 
 const ActivityCard: React.FC<ActivityCardProps> = ({ activities, className = "" }) => {
-  console.log("Activities:", activities);
-  const toTitleCase = (str: string) => {
-  return str
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
-
-const formatActivityDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  const now = new Date();
-
-  const isToday =
-    date.getDate() === now.getDate() &&
-    date.getMonth() === now.getMonth() &&
-    date.getFullYear() === now.getFullYear();
-
-  const yesterday = new Date();
-  yesterday.setDate(now.getDate() - 1);
-
-  const isYesterday =
-    date.getDate() === yesterday.getDate() &&
-    date.getMonth() === yesterday.getMonth() &&
-    date.getFullYear() === yesterday.getFullYear();
-
-  const timeOptions: Intl.DateTimeFormatOptions = {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  };
-
-  if (isToday) {
-    return `Today, ${date.toLocaleTimeString([], timeOptions)}`;
-  }
-
-  if (isYesterday) {
-    return `Yesterday, ${date.toLocaleTimeString([], timeOptions)}`;
-  }
-
-  const dateOptions: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  };
-
-  return date.toLocaleDateString(undefined, dateOptions); 
-};
 
   return (
     <div className={`bg-white rounded-md border border-border-primary p-6 ${className}`}>

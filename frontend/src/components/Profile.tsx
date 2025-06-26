@@ -33,7 +33,7 @@ const Profile = () => {
       <div className="mt-6">
         {tabValue === "personal" && <PersonalInfo />}
         {tabValue === "address" && <AddressInfo />}
-        {tabValue === "transactions" && <PaymentTransactions />}
+        {tabValue === "transactions" && <PaymentTransactions userType="customer" />}
       </div>
     </div>
   );

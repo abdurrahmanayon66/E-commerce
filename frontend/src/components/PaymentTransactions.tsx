@@ -2,9 +2,19 @@
 import React from "react";
 import { Download } from "lucide-react";
 import { useGetPaymentTransactions } from "@/hooks/orderHooks";
+import { useGetSellerPaymentTransactions } from "@/hooks/sellerHooks";
 
-export default function PaymentTransactions() {
-  const { data, isLoading, isError } = useGetPaymentTransactions();
+interface PaymentTransactionsProps {
+  userType: "customer" | "seller";
+}
+
+export default function PaymentTransactions({
+  userType,
+}: PaymentTransactionsProps) {
+  const { data, isLoading, isError } =
+    userType === "seller"
+      ? useGetSellerPaymentTransactions()
+      : useGetPaymentTransactions();
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>Something went wrong</div>;
@@ -16,15 +26,16 @@ export default function PaymentTransactions() {
           Payment Transactions
         </h2>
         <p className="text-base text-text-secondary">
-          Track your payments and download receipts. All transactions are
-          securely processed via XYZ gateway.
+          {userType === "seller"
+            ? "View and manage payments received for your products. All transactions are securely processed via XYZ gateway."
+            : "Track your payments and download receipts. All transactions are securely processed via XYZ gateway."}
         </p>
       </div>
 
       <div className="space-y-2.5">
         {data?.payments
-          .slice() 
-          .reverse() 
+          .slice()
+          .reverse()
           .map((payment) => (
             <div
               key={payment._id}
@@ -42,7 +53,7 @@ export default function PaymentTransactions() {
                   </div>
                   <div>
                     <div className="font-medium text-base text-text-primary">
-                      ${payment.price?.toFixed(2) || "0.00"}
+                      ${(payment.price * payment.quantity).toFixed(2) || "0.00"}
                     </div>
                     <div className="text-sm text-text-secondary">
                       {new Date(payment.createdAt).toLocaleDateString("en-US", {
@@ -71,12 +82,16 @@ export default function PaymentTransactions() {
                     {payment?.paymentStatus === "paid" ? (
                       <button className="flex items-center md:min-h-13 gap-x-2.5 justify-center text-base font-medium text-text-primary border border-border-primary px-3 py-1.5 rounded-sm cursor-pointer">
                         <Download className="w-6 h-6" />
-                        <span className="hidden md:block">Download Receipt</span>
+                        <span className="hidden md:block">
+                          Download Receipt
+                        </span>
                       </button>
                     ) : (
                       <button className="flex items-center md:min-h-13 gap-x-2.5 justify-center text-base font-medium text-text-secondary border border-border-primary px-3 py-1.5 rounded-sm cursor-not-allowed opacity-50">
                         <Download className="w-6 h-6" />
-                        <span className="hidden md:block">Download Receipt</span>
+                        <span className="hidden md:block">
+                          Download Receipt
+                        </span>
                       </button>
                     )}
                   </div>

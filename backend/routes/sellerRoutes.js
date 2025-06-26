@@ -25,5 +25,8 @@ router.post('/register', upload.single('sellerImage'), sellerController.createSe
 router.post('/login', sellerController.loginSeller);
 router.get('/get-all-sellers', auth, sellerController.getAllSellers);
 router.get('/get-profile', auth, sellerController.getSellerProfile);
+router.get('/get-notifications', auth, sellerController.getSellerNotifications);
+router.patch('/update-notification', auth, sellerController.updateLastNotificationSeen);
+router.get('/get-payments', auth, sellerController.getSellerPayments);
 
 module.exports = router;

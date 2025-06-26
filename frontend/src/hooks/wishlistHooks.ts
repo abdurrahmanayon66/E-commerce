@@ -4,6 +4,7 @@ import { WishlistDocument, WishlistGroup } from "@/types/wishlistTypes";
 import {
   CUSTOMER_ACTIVITIES_QUERY_KEY,
   CUSTOMER_STATS_QUERY_KEY,
+  CUSTOMER_NOTIFICATIONS_QUERY_KEY,
 } from "./customerHooks";
 
 export const WISHLIST_QUERY_KEY = ["wishlist"];
@@ -60,6 +61,7 @@ export const useAddToWishlist = () => {
       queryClient.invalidateQueries({ queryKey: GET_ALL_LISTS_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: WISHLIST_QUERY_KEY });
       queryClient.invalidateQueries({ queryKey: CUSTOMER_STATS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: CUSTOMER_NOTIFICATIONS_QUERY_KEY });
       queryClient.invalidateQueries({
         queryKey: CUSTOMER_ACTIVITIES_QUERY_KEY,
       });

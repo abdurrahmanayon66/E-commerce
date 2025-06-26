@@ -1,52 +1,47 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-
-  if (pathname === '/') {
-    return NextResponse.redirect(new URL('/auth', request.url));
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
- 
   if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/auth') ||
-    pathname === '/favicon.ico'
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/auth") ||
+    pathname.startsWith("/payment") ||
+    pathname === "/favicon.ico"
   ) {
     return NextResponse.next();
   }
 
-  const authToken = request.cookies.get('authToken')?.value;
-  const userType = request.cookies.get('userType')?.value;
+  const authToken = request.cookies.get("authToken")?.value;
+  const userType = request.cookies.get("userType")?.value;
 
-
-  
   if (!authToken) {
-    return NextResponse.redirect(new URL('/auth', request.url));
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
- 
   const customerOnlyRoutes = [
-    '/customer/my-orders',
-    '/customer/wishlist',
-    '/customer/profile',
-    'shopping-cart',
-    '/customer/overview',
-    '/checkout',
+    "/customer/my-orders",
+    "/customer/wishlist",
+    "/customer/profile",
+    "shopping-cart",
+    "/customer/overview",
+    "/checkout",
   ];
 
   const sellerOnlyRoutes = [
-    '/seller/overview',
-    '/seller/products',
-    '/seller/add-product',
-    '/seller/edit-product',
-    '/seller/orders',
+    "/seller/overview",
+    "/seller/products",
+    "/seller/add-product",
+    "/seller/edit-product",
+    "/seller/orders",
   ];
 
-  
   const isCustomerOnly = customerOnlyRoutes.some((route) =>
     pathname.startsWith(route)
   );
@@ -54,12 +49,12 @@ export function middleware(request: NextRequest) {
     pathname.startsWith(route)
   );
 
-  if (isCustomerOnly && userType !== 'customer') {
-    return NextResponse.redirect(new URL('/auth', request.url));
+  if (isCustomerOnly && userType !== "customer") {
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
-  if (isSellerOnly && userType !== 'seller') {
-    return NextResponse.redirect(new URL('/auth', request.url));
+  if (isSellerOnly && userType !== "seller") {
+    return NextResponse.redirect(new URL("/auth", request.url));
   }
 
   return NextResponse.next();

@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2 } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 interface LoginFormProps {
   onRegisterClick: (userType: "seller" | "customer") => void;
@@ -28,6 +28,7 @@ const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
   const router = useRouter();
   const setUser = useUserStore((state) => state.setUser);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -63,14 +64,15 @@ const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
       });
       router.push(`/${data.userType}/overview`);
     } catch (err: any) {
-      if(err.status === 401) toast.error("Email or Password is incorrect! Please try again.");
-      else{
+      if (err.status === 401)
+        toast.error("Email or Password is incorrect! Please try again.");
+      else {
         toast.error(
           err.response?.data?.error || "Login failed. Please try again."
         );
-      };
+      }
       setIsLoading(false);
-    } 
+    }
   };
 
   return (
@@ -130,14 +132,14 @@ const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
             )}
           </div>
 
-          <div className="mb-6">
+          <div className="mb-6 relative">
             <label className="block mb-1.5 text-xl text-text-primary">
               Password
             </label>
             <input
               placeholder="Enter your password"
-              type="password"
-              className={`w-full border border-border-primary rounded-md px-5 min-h-13 focus:outline-none text-base text-primary placeholder:text-secondary ${
+              type={showPassword ? "text" : "password"}
+              className={`w-full border border-border-primary rounded-md px-5 pr-12 min-h-13 focus:outline-none text-base text-primary placeholder:text-secondary ${
                 errors.password ? "border-red-500" : ""
               }`}
               {...register("password", {
@@ -148,6 +150,18 @@ const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
                 },
               })}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-4 top-15 transform -translate-y-1/2 text-gray-500 focus:outline-none"
+              tabIndex={-1} 
+            >
+              {showPassword ? (
+                <EyeOff className="w-6 h-6" />
+              ) : (
+                <Eye className="w-6 h-6" />
+              )}
+            </button>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">
                 {errors.password.message}
@@ -162,7 +176,7 @@ const LoginForm = ({ onRegisterClick }: LoginFormProps) => {
           >
             {isLoading ? (
               <>
-                <Loader2 className="animate-spin h-4 w-4" />
+                <Loader2 className="animate-spin h-6 w-6" />
                 Logging in...
               </>
             ) : (

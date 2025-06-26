@@ -27,6 +27,14 @@ export default function Checkout() {
     },
   });
 
+  const handleCancelOrder = () => {
+    resetEverything();
+    toast.success("Order has been cancelled!");
+    setTimeout(() => {
+      router.push("/customer/overview");
+    }, 2000);
+  };
+
   const onSubmit = (data: CheckoutFormData) => {
     if (!selectedPayment) {
       toast.error("Please select a payment method");
@@ -46,15 +54,25 @@ export default function Checkout() {
       promoCode,
       paymentMethod: selectedPayment,
     };
+
     setIsPlacingOrder(true);
+
     addOrderMutation.mutate(payloadToSubmit, {
       onSuccess: (response) => {
-        resetEverything();
-        localStorage.removeItem("cart-storage");
-        toast.success(`Order created successfully!`);
-        setTimeout(() => {
-          router.push("/customer/my-orders");
-        }, 1000);
+        if (selectedPayment === "cod") {
+          resetEverything();
+          toast.success(`Order created successfully!`);
+          setTimeout(() => {
+            router.push("/customer/my-orders");
+          }, 1000);
+        } else if (selectedPayment === "gateway") {
+          if (response.data?.paymentUrl) {
+            window.location.href = response.data.paymentUrl;
+          } else {
+            toast.error("Failed to redirect to payment gateway");
+            setIsPlacingOrder(false);
+          }
+        }
       },
       onError: (error: any) => {
         const errorMessage =
@@ -99,6 +117,7 @@ export default function Checkout() {
             setPromoCode={setPromoCode}
             onPlaceOrder={methods.handleSubmit(onSubmit)}
             isPlacingOrder={isPlacingOrder}
+            onCancelOrder={handleCancelOrder}
           />
         </div>
       </form>

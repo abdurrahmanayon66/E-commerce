@@ -157,7 +157,7 @@ const OrdersTable = ({ orders, userType }: OrdersTableProps) => {
                   {userType === "seller" ? "Amount" : "Total"}
                 </div>
                 <div className="text-base font-medium text-text-primary text-center">
-                  ${order?.price.toFixed(2)}
+                  ${(order?.price * order?.quantity).toFixed(2)}
                 </div>
               </div>
               <div className="flex flex-col items-end">
@@ -245,7 +245,6 @@ const OrdersTable = ({ orders, userType }: OrdersTableProps) => {
         ))}
       </div>
 
-      {/* Original Table View - Show on md and larger screens */}
       <div className="hidden md:block border border-border-primary rounded-lg bg-background-primary">
         <Table>
           <TableHeader>
@@ -285,12 +284,12 @@ const OrdersTable = ({ orders, userType }: OrdersTableProps) => {
                   {formatDate(order?.createdAt)}
                 </TableCell>
                 {userType === "seller" && (
-                  <TableCell className="text-text-primary px-4 py-4 text-base hidden lg:block">
+                  <TableCell className="text-text-primary px-4 py-4 text-base hidden lg:table-cell">
                     {order?.customerName}
                   </TableCell>
                 )}
                 <TableCell className="text-text-primary px-4 py-4 text-base">
-                  ${order?.price.toFixed(2)}
+                 ${(order?.price * order?.quantity).toFixed(2)}
                 </TableCell>
                 <TableCell className="px-4 py-4">
                   <span

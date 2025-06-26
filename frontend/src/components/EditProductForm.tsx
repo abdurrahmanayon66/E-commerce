@@ -29,6 +29,7 @@ const EditProductForm = () => {
       description: "",
       category: "",
       productImages: [],
+      productImageStrings: [],
       brand: "",
       model: "",
       storage: "",
@@ -59,6 +60,7 @@ const EditProductForm = () => {
       description: data.description || "",
       category: data.category || "",
       productImages: [],
+      productImageStrings: data.productImageStrings || [],
       brand: data.brand || "",
       model: data.model || "",
       storage: data.storage || "",
@@ -86,44 +88,55 @@ const EditProductForm = () => {
   }, [productData, isLoading, reset, transformProductData]);
 
   const onSubmit = async (data: ProductFormData) => {
-    try {
-      setIsSubmitting(true);
+  setIsSubmitting(true);
 
-      const patchData = {
-        ...data,
-        negotiable,
-        productId,
-        price: parseFloat(data.price),
-        salePrice: data.salePrice ? parseFloat(data.salePrice) : undefined,
-        quantity: parseInt(data.quantity),
-        tags: data.tags
-          ? data.tags
-              .split(",")
-              .map((tag) => tag.trim())
-              .filter((tag) => tag)
-          : [],
-      };
-
-      console.log("Data to patch:", patchData);
-
-      const response = await apiClient.patch(`/api/products/update-product`, patchData);
-
-      if (response.data.success) {
-        toast.success("Product updated successfully!");
-        router.push("/seller/products");
-      } else {
-        throw new Error(response.data.message || "Failed to update product");
-      }
-    } catch (error: unknown) {
-      console.error("Error updating product:", error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to update product. Please try again.");
-        setIsSubmitting(false);
-      }
+  const formData = new FormData();
+  
+  Object.entries(data).forEach(([key, value]) => {
+    if (key !== 'productImages' && key !== 'productImageStrings') {
+      formData.append(key, value);
     }
-  };
+  });
+
+  formData.append('productId', productId);
+  formData.append('negotiable', negotiable.toString());
+  
+  if (data.productImageStrings && data.productImageStrings.length > 0) {
+    formData.append('retainedImageHashes', JSON.stringify(data.productImageStrings));
+  }
+
+  if (data.productImages && data.productImages.length > 0) {
+    data.productImages.forEach((file) => {
+      formData.append('productImages', file);
+    });
+  }
+
+  try {
+    const response = await apiClient.patch(
+      `/api/products/update-product`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    if (response.data.success) {
+      toast.success("Product updated successfully!");
+    } else {
+      throw new Error(response.data.message || "Failed to update product");
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      toast.error(error.message);
+    } else {
+      toast.error("Failed to update product. Please try again.");
+    }
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   const discardChanges = useCallback(() => {
     if (
@@ -191,6 +204,7 @@ const EditProductForm = () => {
                 description: productData.description,
                 category: productData.category,
                 productImages: [],
+                productImageStrings: productData.productImageStrings || [], // Pass existing images
               }}
             />
 

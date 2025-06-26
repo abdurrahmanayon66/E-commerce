@@ -1,5 +1,5 @@
 "use client";
-import { ArrowLeft, Printer, Phone, X, Truck } from "lucide-react";
+import { ArrowLeft, Printer, Phone, X, Truck, Loader2 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Timeline from "../Timeline";
@@ -39,10 +39,10 @@ const OrderDetails = () => {
 
   if (isLoading) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center">
-        <div className="fixed inset-0 bg-[#7D8184] opacity-50" />
-        <div className="relative bg-background-primary rounded-lg p-5 border border-border-primary">
-          <p className="text-text-primary">Loading order details...</p>
+      <div className="w-full h-full flex items-center justify-center lg:mt-42">
+        <div className="flex justify-between items-center gap-x-2.5 rounded-lg p-5">
+          <Loader2 className="w-10 h-10 animate-spin text-button-primary" />
+          <p className="text-button-primary">Loading order details...</p>
         </div>
       </div>
     );
@@ -63,7 +63,7 @@ const OrderDetails = () => {
 
   return (
     <div>
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between mr-5 gap-y-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between mr-5 gap-y-5 w-full">
         <div className="flex items-center gap-x-2">
           <button
             onClick={() => router.push("/seller/orders")}
@@ -74,11 +74,11 @@ const OrderDetails = () => {
           <h1 className="text-3xl font-semibold">Order Details</h1>
         </div>
         <div className="flex gap-x-5">
-          <button className="flex items-center justify-center hover:cursor-pointer rounded-sm gap-x-2.5 min-w-[190px] min-h-[52px] px-5 py-2.5 border text-text-primary border-border-primary font-medium">
+          <button className="flex items-center justify-center hover:cursor-pointer rounded-sm gap-x-2.5 md:min-w-[190px] min-h-[52px] px-5 py-2.5 border text-text-primary border-border-primary font-medium">
             <Printer className="w-5 h-5" />
             Print Invoice
           </button>
-          <button className="flex items-center justify-center hover:cursor-pointer rounded-sm gap-x-2.5 min-w-[190px] min-h-[52px] px-5 py-2.5 bg-button-primary text-white font-medium">
+          <button className="flex items-center justify-center hover:cursor-pointer rounded-sm gap-x-2.5 md:min-w-[190px] min-h-[52px] px-5 py-2.5 bg-button-primary text-white font-medium">
             <Phone className="w-5 h-5" />
             Contact Buyer
           </button>
@@ -87,7 +87,7 @@ const OrderDetails = () => {
       <div className="lg:mt-10 mt-5 rounded-lg md:border md:border-border-primary bg-white md:p-5">
         <ProductDetailsCard order={order} orderId={orderId} />
         <div className="flex md:flex-row flex-col gap-y-4 md:gap-y-0 gap-x-5 mt-5 items-start">
-          <Timeline />
+          <Timeline order={order} />
           <BuyerInformation order={order} />
          <div className="hidden lg:block"> <PaymentInformation order={order} /></div>
         </div>
@@ -96,7 +96,7 @@ const OrderDetails = () => {
           <button
             onClick={() => setIsCancelModalOpen(true)}
             disabled={statusUpdated || order?.orderStatus !== "pending"}
-            className={`flex items-center min-w-42 min-h-13 justify-center rounded-sm border font-medium border-red-200 text-button-primary gap-x-1.5 px-4 py-2 cursor-pointer ${
+            className={`flex items-center md:min-w-42 min-h-13 justify-center rounded-sm border font-medium border-red-200 text-button-primary gap-x-1.5 px-4 py-2 cursor-pointer ${
               statusUpdated || order?.orderStatus !== "pending"
                 ? "opacity-50"
                 : ""
@@ -111,7 +111,7 @@ const OrderDetails = () => {
             disabled={
               isShipLoading || statusUpdated || order?.orderStatus !== "pending"
             }
-            className={`flex items-center min-w-42 min-h-13 justify-center rounded-sm border font-medium text-white bg-button-primary gap-x-1.5 px-4 py-2 cursor-pointer ${
+            className={`flex items-center md:min-w-42 min-h-13 justify-center rounded-sm border font-medium text-white bg-button-primary gap-x-1.5 px-4 py-2 cursor-pointer ${
               statusUpdated || order?.orderStatus !== "pending"
                 ? "opacity-50"
                 : ""

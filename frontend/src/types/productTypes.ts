@@ -8,6 +8,7 @@ export interface ProductFormData {
   description: string;
   category: string;
   productImages: File[];
+  productImageStrings: string[];
   brand: string;
   model: string;
   storage: string;

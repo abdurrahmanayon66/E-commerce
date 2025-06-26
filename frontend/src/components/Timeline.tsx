@@ -1,3 +1,4 @@
+import { OrderDetailsResponse } from "@/types/ordertypes";
 import { Check } from "lucide-react";
 
 type TimelineStep = {
@@ -6,15 +7,57 @@ type TimelineStep = {
   done: boolean;
 };
 
-const timelineData: TimelineStep[] = [
-  { label: "Order Placed", value: "May 15, 2025", done: true },
-  { label: "Payment Confirmed", value: "May 15, 2025", done: true },
-  { label: "Processed", value: "Waiting for processing", done: false },
-  { label: "Shipped", value: "Not shipped yet", done: false },
-  { label: "Delivered", value: "Waiting for delivery", done: false },
-];
+type TimelineProps = {
+  order: OrderDetailsResponse;
+};
 
-export default function Timeline() {
+export default function Timeline({ order }: TimelineProps) {
+  const createdDate = new Date(order.createdAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const updatedDate = new Date(order.updatedAt).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const isPaid = order.paymentStatus === "paid";
+  const isShipped = order.orderStatus === "shipped";
+  const isDelivered = order.orderStatus === "delivered";
+
+  const timelineData: TimelineStep[] = [
+    {
+      label: "Order Placed",
+      value: createdDate,
+      done: true,
+    },
+    {
+      label: "Payment Confirmed",
+      value: isPaid ? updatedDate : "Waiting for payment",
+      done: isPaid,
+    },
+    {
+      label: "Processed",
+      value: !["pending", "cancelled"].includes(order.orderStatus)
+        ? updatedDate
+        : "Waiting for processing",
+      done: !["pending", "cancelled"].includes(order.orderStatus),
+    },
+    {
+      label: "Shipped",
+      value: isShipped || isDelivered ? updatedDate : "Not shipped yet",
+      done: isShipped || isDelivered,
+    },
+    {
+      label: "Delivered",
+      value: isDelivered ? updatedDate : "Waiting for delivery",
+      done: isDelivered,
+    },
+  ];
+
   return (
     <div className="bg-white px-3 py-5 lg:px-5 border border-border-primary rounded-lg w-full md:max-w-xs">
       <div className="text-2xl font-semibold mb-5">Timeline</div>

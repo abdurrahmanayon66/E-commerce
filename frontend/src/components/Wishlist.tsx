@@ -119,7 +119,7 @@ const Wishlist = () => {
               Create New Wishlist
             </h2>
 
-            <label className="block text-sm font-medium text-text-secondary mb-1">
+            <label className="block text-sm font-medium text-text-primary mb-1">
               Wishlist Title
             </label>
             <input
@@ -127,7 +127,7 @@ const Wishlist = () => {
               placeholder="Enter wishlist title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full border border-border-primary rounded px-3 py-2 text-base mb-4"
+              className="w-full border border-border-primary rounded-md focus:outline-0 px-3 py-2 text-base mb-4"
             />
 
             <div className="flex justify-end gap-2">

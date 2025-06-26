@@ -51,7 +51,7 @@ const BuyerInformation = ({ order }: { order: OrderDetailsResponse }) => {
           <div className="text-base text-text-secondary my-1">
             {order?.paymentMethod === "gateway"
               ? "**** **** **** 4242"
-              : "Payment will be made cash on delivery"}
+              : "Payment will be made on delivery"}
           </div>
 
           <span

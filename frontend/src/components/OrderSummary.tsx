@@ -1,7 +1,7 @@
 "use client";
 import React, { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
-import { Tag, X } from "lucide-react";
+import { Loader2, Tag, X } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useProductsById } from "@/hooks/productHooks";
 
@@ -10,12 +10,14 @@ interface OrderSummaryProps {
   setPromoCode: (value: string) => void;
   onPlaceOrder: () => void;
   isPlacingOrder: boolean;
+  onCancelOrder: () => void;
 }
 
 export default function OrderSummary({
   promoCode,
   setPromoCode,
   onPlaceOrder,
+  onCancelOrder,
   isPlacingOrder,
 }: OrderSummaryProps) {
   const { setValue } = useFormContext();
@@ -127,6 +129,7 @@ export default function OrderSummary({
         <div className="flex justify-between text-base font-medium">
           <button
             type="button"
+            onClick={onCancelOrder}
             className="flex items-center min-w-42 min-h-13 justify-center rounded-sm border font-medium border-danger-border text-button-primary gap-x-1.5 px-5 py-2.5 cursor-pointer"
           >
             <X className="w-6 h-6" />
@@ -144,6 +147,11 @@ export default function OrderSummary({
         : "bg-button-primary"
     }`}
           >
+            <Loader2
+              className={`w-6 h-6 ${
+                isPlacingOrder ? "animate-spin" : "hidden"
+              }`}
+            />
             {isPlacingOrder ? "Placing Order..." : "Place Order"}
           </button>
         </div>
