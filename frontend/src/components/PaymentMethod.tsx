@@ -51,7 +51,7 @@ export default function PaymentMethod({
             <Checkbox
               checked={selectedPayment === "gateway"}
               onCheckedChange={() => handleSelectGateway()}
-              className="border-text-primary w-[15px] h-[15px] border-2 rounded-[3px] shadow-none"
+              className="border-text-primary w-[15px] h-[15px] border-2 rounded-[3px] shadow-none data-[state=checked]:border-custom-blue data-[state=checked]:bg-white data-[state=checked]:text-custom-blue [&_svg]:!w-2.5 [&_svg]:!h-2.5 [&_svg]:!stroke-5"
             />
             <p className="text-base text-text-primary">
               I understand I will complete my payment via a secure external
@@ -69,7 +69,7 @@ export default function PaymentMethod({
               <Checkbox
                 checked={selectedPayment === "cod"}
                 onCheckedChange={() => handleSelectCOD()}
-                className="border-text-secondary border-2 rounded-full w-5 h-5"
+                className="border-text-secondary border-2 rounded-full w-5 h-5 shadow-none data-[state=checked]:border-custom-blue data-[state=checked]:bg-white data-[state=checked]:text-custom-blue [&_svg]:!w-2.5 [&_svg]:!h-2.5 [&_svg]:!stroke-5"
               />
               <p className="font-medium text-xl text-text-primary">
                 Cash On Delivery
